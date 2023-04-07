@@ -1,4 +1,6 @@
 using mapsProjAPI.Data;
+using mapsProjAPI.Interfaces;
+using mapsProjAPI.Managers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -50,6 +52,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+//DI declarations
+builder.Services.AddScoped<IAuthManager, AuthManager>();
+
 
 app.UseHttpsRedirection();
 

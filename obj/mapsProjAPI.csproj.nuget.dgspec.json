@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\drago\\source\\repos\\mapsProjAPI\\mapsProjAPI\\mapsProjAPI.csproj": {}
+    "D:\\IT Projects\\mapsProjAPI\\mapsProjAPI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\drago\\source\\repos\\mapsProjAPI\\mapsProjAPI\\mapsProjAPI.csproj": {
+    "D:\\IT Projects\\mapsProjAPI\\mapsProjAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\drago\\source\\repos\\mapsProjAPI\\mapsProjAPI\\mapsProjAPI.csproj",
+        "projectUniqueName": "D:\\IT Projects\\mapsProjAPI\\mapsProjAPI.csproj",
         "projectName": "mapsProjAPI",
-        "projectPath": "C:\\Users\\drago\\source\\repos\\mapsProjAPI\\mapsProjAPI\\mapsProjAPI.csproj",
+        "projectPath": "D:\\IT Projects\\mapsProjAPI\\mapsProjAPI.csproj",
         "packagesPath": "C:\\Users\\drago\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\drago\\source\\repos\\mapsProjAPI\\mapsProjAPI\\obj\\",
+        "outputPath": "D:\\IT Projects\\mapsProjAPI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\drago\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -48,7 +48,25 @@
               "target": "Package",
               "version": "[7.0.4, )"
             },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[7.0.4, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[7.0.4, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[7.0.4, )"
+            },
             "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[6.4.0, )"
+            },
+            "Twilio": {
               "target": "Package",
               "version": "[6.4.0, )"
             }

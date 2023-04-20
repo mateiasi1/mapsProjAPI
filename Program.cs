@@ -13,6 +13,11 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddDbContext<Context>(options =>
     options.UseSqlServer(connectionString));
+
+
+//DI declarations
+builder.Services.AddScoped<IAuthManager, AuthManager>();
+
 // Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -53,8 +58,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//DI declarations
-builder.Services.AddScoped<IAuthManager, AuthManager>();
 
 
 app.UseHttpsRedirection();

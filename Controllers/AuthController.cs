@@ -1,7 +1,6 @@
 ﻿using mapsProjAPI.Data;
 using mapsProjAPI.DTOs;
 using mapsProjAPI.Interfaces;
-using mapsProjAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -12,7 +11,7 @@ using System.Text;
 
 namespace mapsProjAPI.Controllers
 {
-    
+
     [ApiController]
     public class AuthController: ControllerBase
     {
@@ -48,12 +47,29 @@ namespace mapsProjAPI.Controllers
             {
                 return BadRequest();
             }
-            var token = _authManager.Login(loginDTO);
-            if (token == null)
+            var loginResponse = _authManager.Login(loginDTO);
+            if (loginResponse == null)
             {
                 return Unauthorized();
             }
-            return Ok(token);
+            
+            return Ok(loginResponse);
+        }
+        [Authorize]
+        [HttpGet]
+        [Route("api/[controller]/getUser")]
+        public IActionResult GetUser()
+        {
+            string authHeader = Request.Headers["Authorization"];
+            
+            string token = authHeader.Substring("Bearer ".Length);
+            var loginResponse = _authManager.GetUser(token);
+            if (loginResponse == null)
+            {
+                return Unauthorized();
+            }
+
+            return Ok(loginResponse);
         }
     }
 }

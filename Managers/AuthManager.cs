@@ -1,5 +1,6 @@
 ﻿using mapsProjAPI.Data;
 using mapsProjAPI.DTOs;
+using mapsProjAPI.DTOs.Response;
 using mapsProjAPI.Interfaces;
 using mapsProjAPI.Models;
 using Microsoft.IdentityModel.Tokens;
@@ -48,7 +49,7 @@ namespace mapsProjAPI.Managers
                 loginAttempt.VerificationCode = newlyCreatedOTP;
                 loginAttempt.Description = messageOptions.Body;
                 loginAttempt.DateCreated = DateTime.UtcNow;
-                loginAttempt.ValidUntill = DateTime.UtcNow.AddMinutes(10);
+                loginAttempt.ValidUntill = DateTime.UtcNow.AddDays(90);
                 _context.LoginAttempts.Add(loginAttempt);
                 var user = _context.Users.Where(u => u.PhoneNumber == loginDTO.PhoneNumber).FirstOrDefault();
                 if (user == null)
@@ -66,7 +67,7 @@ namespace mapsProjAPI.Managers
             loginAttempt.Description = "Error Code: " + message.ErrorCode + " Message Error: " + message.ErrorMessage;
             return false;
         }
-        public string Login(LoginDTO loginDTO)
+        public LoginDTOResponse Login(LoginDTO loginDTO)
         {
             var user = _context.Users.FirstOrDefault(u => u.PhoneNumber == loginDTO.PhoneNumber);
             if (user == null) return null;
@@ -94,7 +95,7 @@ namespace mapsProjAPI.Managers
             var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature);
 
             var subject = new ClaimsIdentity(new[] { new Claim(JwtRegisteredClaimNames.Sub, user.PhoneNumber) });
-            var expires = DateTime.UtcNow.AddMinutes(10);
+            var expires = DateTime.UtcNow.AddDays(90);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -113,7 +114,28 @@ namespace mapsProjAPI.Managers
             lastAttempt.Description = "Success";
             _context.SaveChanges();
 
-            return jwtToken;
+            var loginResponse = new LoginDTOResponse
+            {
+                User = user,
+                ActiveUntil = expires,
+                Token = jwtToken
+            };
+            return loginResponse;
+        }
+        public UserDto GetUser(string token) {
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadToken(token);
+            var tokenS = jsonToken as JwtSecurityToken;
+            var phone = tokenS.Claims.First(claim => claim.Type == "sub").Value;
+            var user = _context.Users.FirstOrDefault(u => u.PhoneNumber == phone);
+            if (user == null) return null;
+            var userDto = new UserDto()
+            {
+                Name = user.Name,
+                PhoneNumber = user.PhoneNumber,
+                UserRole = user.UserRole
+            };
+            return userDto;
         }
     }
 }

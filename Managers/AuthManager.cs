@@ -1,4 +1,5 @@
-﻿using mapsProjAPI.Data;
+﻿using mapsProjAPI.Constants;
+using mapsProjAPI.Data;
 using mapsProjAPI.DTOs;
 using mapsProjAPI.DTOs.Response;
 using mapsProjAPI.Interfaces;
@@ -72,20 +73,33 @@ namespace mapsProjAPI.Managers
             var user = _context.Users.FirstOrDefault(u => u.PhoneNumber == loginDTO.PhoneNumber);
             if (user == null) return null;
 
+            var loginResponse = new LoginDTOResponse
+            {
+                User = null,
+                ActiveUntil = null,
+                Token = null,
+                StatusCode = null
+            };
+
             var lastAttempt = _context.LoginAttempts
                 .Where(la => la.PhoneNumber == loginDTO.PhoneNumber)
                 .OrderByDescending(la => la.DateCreated)
                 .FirstOrDefault();
 
-            if (lastAttempt == null || lastAttempt.AttemptCounter >= 3 || lastAttempt.ValidUntill < DateTime.UtcNow) return null;
-
+            
             if (lastAttempt.VerificationCode != loginDTO.VerificationCode)
             {
                 lastAttempt.AttemptCounter += 1;
+                if (lastAttempt == null || lastAttempt.AttemptCounter >= 3 || lastAttempt.ValidUntill < DateTime.UtcNow)
+                {
+                    loginResponse.StatusCode = CustomErrorCodes.MAX_ATTEMPT_REACHED;
+                    return loginResponse;
+                };
                 lastAttempt.Description = "Codul nu este valid, te rugăm să încerci din nou! Atentie: codul poate fi greșit de maxim 3 ori și este valid doar 10 minute!";
                 _context.SaveChanges();
                 return null;
             }
+           
 
             if (user.PhoneNumber != loginDTO.PhoneNumber) return null;
 
@@ -114,12 +128,11 @@ namespace mapsProjAPI.Managers
             lastAttempt.Description = "Success";
             _context.SaveChanges();
 
-            var loginResponse = new LoginDTOResponse
-            {
-                User = user,
-                ActiveUntil = expires,
-                Token = jwtToken
-            };
+            loginResponse.User = user;
+            loginResponse.ActiveUntil = expires;
+            loginResponse.Token = jwtToken;
+            loginResponse.StatusCode = StatusCodes.Status200OK.ToString();
+           
             return loginResponse;
         }
         public UserDto GetUser(string token) {

@@ -4,8 +4,9 @@ namespace mapsProjAPI.DTOs.Response
 {
     public class LoginDTOResponse
     {
-        public User User { get; set; }
-        public DateTime ActiveUntil { get; set; }
-        public string Token { get; set; }
+        public User? User { get; set; }
+        public DateTime? ActiveUntil { get; set; }
+        public string? Token { get; set; }
+        public string? StatusCode { get; set; }
     }
 }

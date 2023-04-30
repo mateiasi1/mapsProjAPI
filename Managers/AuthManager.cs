@@ -70,6 +70,7 @@ namespace mapsProjAPI.Managers
         }
         public LoginDTOResponse Login(LoginDTO loginDTO)
         {
+            var lastAttempt = new LoginAttempt();
             var user = _context.Users.FirstOrDefault(u => u.PhoneNumber == loginDTO.PhoneNumber);
             if (user == null) return null;
 
@@ -81,18 +82,35 @@ namespace mapsProjAPI.Managers
                 StatusCode = null
             };
 
-            var lastAttempt = _context.LoginAttempts
+            lastAttempt = _context.LoginAttempts
                 .Where(la => la.PhoneNumber == loginDTO.PhoneNumber)
                 .OrderByDescending(la => la.DateCreated)
                 .FirstOrDefault();
-
             
+            if (lastAttempt == null) {
+                lastAttempt.AttemptCounter = 0;
+                lastAttempt.PhoneNumber = loginDTO.PhoneNumber;
+                lastAttempt.DateCreated = DateTime.UtcNow;
+                lastAttempt.ValidUntill = DateTime.UtcNow.AddDays(90);
+                lastAttempt.VerificationCode = loginDTO.VerificationCode;
+            }
+            if (lastAttempt.LockedForLogin >= DateTime.UtcNow)
+            {
+                return loginResponse;
+            }
+            if (lastAttempt.LockedForLogin != null && lastAttempt.LockedForLogin < DateTime.UtcNow)
+            {
+                lastAttempt.AttemptCounter = 0;
+                lastAttempt.LockedForLogin = null;
+            }
             if (lastAttempt.VerificationCode != loginDTO.VerificationCode)
             {
                 lastAttempt.AttemptCounter += 1;
                 if (lastAttempt == null || lastAttempt.AttemptCounter >= 3 || lastAttempt.ValidUntill < DateTime.UtcNow)
                 {
+                    lastAttempt.LockedForLogin = DateTime.UtcNow.AddMinutes(5);
                     loginResponse.StatusCode = CustomErrorCodes.MAX_ATTEMPT_REACHED;
+                    _context.SaveChanges();
                     return loginResponse;
                 };
                 lastAttempt.Description = "Codul nu este valid, te rugăm să încerci din nou! Atentie: codul poate fi greșit de maxim 3 ori și este valid doar 10 minute!";

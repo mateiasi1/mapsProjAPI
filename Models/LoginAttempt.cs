@@ -9,5 +9,6 @@
         public DateTime? ValidUntill { get; set; }
         public string? Description { get; set; }
         public int AttemptCounter { get; set; }
+        public DateTime? LockedForLogin { get; set; }
     }
 }

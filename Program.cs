@@ -17,6 +17,7 @@ builder.Services.AddDbContext<Context>(options =>
 
 //DI declarations
 builder.Services.AddScoped<IAuthManager, AuthManager>();
+builder.Services.AddScoped<IEventManager, EventManager>();
 
 // Add services to the container.
 builder.Services.AddControllers();

@@ -10,6 +10,9 @@ namespace mapsProjAPI.Data
         }
         public DbSet<LoginAttempt> LoginAttempts { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Event> Events{ get; set; }
+        public DbSet<SubEvent> SubEvents { get; set; }
+        public DbSet<SubEventType> SubEventTypes { get; set; }
         // Add your DbSet properties here
     }
 }
